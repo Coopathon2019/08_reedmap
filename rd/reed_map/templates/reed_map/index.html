@@ -1,0 +1,165 @@
+{% load staticfiles %}
+{% load compress %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=IE8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta charset="UTF-8">
+  <title>蘆葦展示</title>
+
+  {% compress js %}
+  <script src="{% static 'js/reed_map/vue.js' %}"></script>
+  <script src="{% static 'js/reed_map/es6-promise.auto.js' %}"></script>
+  <script src="{% static 'js/reed_map/babel.min.js' %}"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" ></script>
+
+  <script type="text/babel" data-presets="es2015,stage-2" src="{% static "components/reed_map/Map.js" %}"></script>
+  <script type="text/babel" data-presets="es2015,stage-2" src="{% static "components/reed_map/Aside.js" %}"></script>
+  {% endcompress %}
+
+  {% compress css %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/reed_map/main.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/reed_map/aside.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/reed_map/map.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/leaflet.css' %}" />
+  {% endcompress %}
+
+  <script type="text/javascript">
+    var GV = {
+      REED_ICON: "{% static 'imgs/reed.png' %}",
+      RECYCLING_ICON: "{% static 'imgs/recycling.png' %}",
+      GEEN_RESTAURANT_ICON: "{% static 'imgs/geen_restaurant.png' %}",
+      RESTAURANT_ICON: "{% static 'imgs/restaurant.png' %}",
+      RIVER_ICON: "{% static 'imgs/reed.png' %}",
+      NORMAL_WATER_ICON: "{% static 'imgs/normal_water_quality.png' %}",
+      MID_WATER_ICON: "{% static 'imgs/mid_water_quality.png' %}",
+      BAD_WATER_ICON: "{% static 'imgs/bad_water_quality.png' %}",
+    };
+    GV.MAP_TILE = '{{ map_tile|safe }}';
+    GV.GEEN_RESTAURANT = {{ green_restaurant|safe }};
+    GV.REED_DATAS = {{ reed_datas|safe }};
+    GV.BEE_HOTEL_DATAS = {{ bee_hotel_datas|safe }};
+    GV.RIVER_DATAS = {{ water_quality_data|safe }};
+    GV.USER = "{{ user }}";
+
+    GV.UPLOAD_URL = "/upload/"   // <-- 這裏寫死吧. 妳們太乖了~~
+
+  </script>
+
+  <style>
+
+    [v-cloak] {
+      display: none;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="reed_map_platform">
+    <div class="right_container">
+      <map_aside
+        :markers_info="markers_info"
+      ></map_aside>
+    </div>
+    <div class="left_container">
+      <reed_map
+        :markers_info="markers_info"
+        :user_edit_permission="user_edit_permission"
+      ></reed_map>
+    </div>
+  </div>
+  <script type="text/babel" data-presets="es2015,stage-2">
+
+    Vue.config.devtools = true;
+    window.app = new Vue({
+      el: '#reed_map_platform',
+      delimiters: ["[[", "]]"],
+      components: {
+        'reed_map': ReedMap,
+        'map_aside': Aside
+      },
+
+      data: {
+        user_edit_permission: {
+          user_A: {
+            default_view: ['reed', 'river'],
+            edit: []
+          },
+          user_B: {
+            default_view: ['reed', 'recycling', 'green_restaurant'],
+            edit: []
+          },
+          user_C: {
+            default_view: ['reed', 'recycling', 'green_restaurant'],
+            edit: ['green_restaurant']
+          },
+        },
+
+        markers_info: [{
+          name: 'reed',
+          img: GV.REED_ICON,
+          selected: false,
+          icon: L.icon({
+            iconUrl: GV.REED_ICON,
+            // iconSize: [36, 36],
+            iconAnchor: [23, 18]
+          })
+        }, {
+          name: 'green_restaurant',
+          img: GV.GEEN_RESTAURANT_ICON,
+          selected: false,
+          icon: L.icon({
+            iconUrl: GV.GEEN_RESTAURANT_ICON,
+            // iconSize: [36, 36],
+            iconAnchor: [23, 18]
+          })
+        }, {
+          name: 'recycling',
+          img: GV.RECYCLING_ICON,
+          selected: false,
+          icon: L.icon({
+            iconUrl: GV.RECYCLING_ICON,
+            // iconSize: [36, 36],
+            iconAnchor: [24, 10]
+          })
+        }, {
+          name: 'river',
+          img: GV.NORMAL_WATER_ICON,
+          selected: false,
+        }]
+      },
+
+      computed: {
+      },
+
+      methods: {
+        get_default_select_markers() {
+          for (let marker of this.markers_info) {
+            let marker_type = marker.name
+
+            marker.selected = this.user_edit_permission[GV.USER].default_view.indexOf(marker_type) >= 0
+          }
+        }
+      },
+
+      watch: {
+      },
+
+      mounted() {
+        this.$nextTick(() => {
+          this.get_default_select_markers()
+        })
+      },
+
+      created() {
+
+      },
+
+    });
+  </script>
+</body>

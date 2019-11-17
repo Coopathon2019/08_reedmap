@@ -1,0 +1,42 @@
+import os
+
+# DATABASES = {
+# }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(os.environ.get("BASE_DIR"), "cache"),
+        'TIMEOUT': 30,
+    }
+}
+
+DEBUG = True
+COMPRESS_ENABLED = False
+COMPRESS_OFFLINE = False
+
+APPEND_SLASH = False
+ALLOWED_HOSTS = ['*']
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+# FORCE_SCRIPT_NAME = ""
+
+MAP_TILE = "http://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}"
+
+# aws settings
+#AWS_ACCESS_KEY_ID = 'AKIAQ3Z74VT7NHS652RZ'
+#AWS_SECRET_ACCESS_KEY = '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'
+#AWS_STORAGE_BUCKET_NAME = 'reedmapaws'
+#AWS_DEFAULT_ACL = None
+#AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+#AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+# s3 static settings
+#STATIC_LOCATION = 'static'
+#STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+#STATICFILES_STORAGE = 'rd.storage_backends.StaticStorage'
+# s3 public media settings
+#PUBLIC_MEDIA_LOCATION = 'data'
+#MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+#DEFAULT_FILE_STORAGE = 'rd.storage_backends.PublicMediaStorage'
